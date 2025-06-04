@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.20.xsd">
+
+    <changeSet id="2" author="student">
+        <comment>Зміна поля price на cost з типом INTEGER</comment>
+
+        <addColumn tableName="products">
+            <column name="cost" type="INTEGER">
+                <constraints nullable="true"/>
+            </column>
+        </addColumn>
+
+        <sql>
+            UPDATE products SET cost = CAST(price * 100 AS INTEGER);
+        </sql>
+
+        <dropColumn tableName="products" columnName="price"/>
+
+        <addNotNullConstraint tableName="products" columnName="cost"/>
+
+        <rollback>
+            <addColumn tableName="products">
+                <column name="price" type="DECIMAL(10,2)">
+                    <constraints nullable="false"/>
+                </column>
+            </addColumn>
+            <sql>UPDATE products SET price = cost / 100.0;</sql>
+            <dropColumn tableName="products" columnName="cost"/>
+        </rollback>
+    </changeSet>
+
+    <changeSet id="3" author="student">
+        <comment>Додавання додаткового поля created_date</comment>
+
+        <addColumn tableName="products">
+            <column name="created_date" type="TIMESTAMP" defaultValueComputed="CURRENT_TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+
+        <rollback>
+            <dropColumn tableName="products" columnName="created_date"/>
+        </rollback>
+    </changeSet>
+
+</databaseChangeLog>

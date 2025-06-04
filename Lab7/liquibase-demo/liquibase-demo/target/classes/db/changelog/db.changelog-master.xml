@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.20.xsd">
+
+    <!-- Changeset 1: Створення таблиці -->
+    <changeSet id="1" author="student">
+        <comment>Створення таблиці products</comment>
+
+        <createTable tableName="products">
+            <column name="product_code" type="VARCHAR(50)">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="price" type="DECIMAL(10,2)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="description" type="TEXT">
+                <constraints nullable="true"/>
+            </column>
+        </createTable>
+
+        <insert tableName="products">
+            <column name="product_code" value="LAPTOP001"/>
+            <column name="price" value="25999.99"/>
+            <column name="description" value="Потужний ноутбук"/>
+        </insert>
+
+        <insert tableName="products">
+            <column name="product_code" value="MOUSE001"/>
+            <column name="price" value="599.50"/>
+            <column name="description" value="Бездротова миша"/>
+        </insert>
+    </changeSet>
+
+    <!-- Changeset 2: Зміна поля (SQLite сумісний) -->
+    <changeSet id="2" author="student">
+        <comment>Зміна price на cost через recreate таблиці</comment>
+
+        <!-- Крок 1: Створюємо нову таблицю з правильною структурою -->
+        <createTable tableName="products_new">
+            <column name="product_code" type="VARCHAR(50)">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="cost" type="INTEGER">
+                <constraints nullable="false"/>
+            </column>
+            <column name="description" type="TEXT">
+                <constraints nullable="true"/>
+            </column>
+        </createTable>
+
+        <!-- Крок 2: Копіюємо дані з конвертацією price в cost -->
+        <sql>
+            INSERT INTO products_new (product_code, cost, description)
+            SELECT product_code, CAST(price * 100 AS INTEGER), description
+            FROM products;
+        </sql>
+
+        <!-- Крок 3: Видаляємо стару таблицю -->
+        <dropTable tableName="products"/>
+
+        <!-- Крок 4: Перейменовуємо нову таблицю -->
+        <renameTable oldTableName="products_new" newTableName="products"/>
+    </changeSet>
+
+    <!-- Changeset 3: Додаємо додаткове поле -->
+    <changeSet id="3" author="student">
+        <comment>Додавання created_date поля</comment>
+
+        <addColumn tableName="products">
+            <column name="created_date" type="TIMESTAMP" defaultValueComputed="CURRENT_TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+    </changeSet>
+
+</databaseChangeLog>

@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.20.xsd">
+
+    <changeSet id="1" author="student">
+        <comment>Створення таблиці products з трьома полями різних типів</comment>
+
+        <createTable tableName="products">
+            <column name="product_code" type="VARCHAR(50)">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+
+            <column name="price" type="DECIMAL(10,2)">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="description" type="TEXT">
+                <constraints nullable="true"/>
+            </column>
+        </createTable>
+
+        <insert tableName="products">
+            <column name="product_code" value="LAPTOP001"/>
+            <column name="price" value="25999.99"/>
+            <column name="description" value="Потужний ноутбук для роботи та ігор з високопродуктивним процесором"/>
+        </insert>
+
+        <insert tableName="products">
+            <column name="product_code" value="MOUSE001"/>
+            <column name="price" value="599.50"/>
+            <column name="description" value="Бездротова миша з високою точністю"/>
+        </insert>
+
+        <rollback>
+            <dropTable tableName="products"/>
+        </rollback>
+    </changeSet>
+
+</databaseChangeLog>
